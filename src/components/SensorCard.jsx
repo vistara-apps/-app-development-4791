@@ -2,76 +2,109 @@ import React from 'react';
 import { Droplets, Thermometer, Battery, Wifi, WifiOff, AlertTriangle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
-export function SensorCard({ sensor }) {
+export function SensorCard({ sensor, onClick }) {
   const getStatusColor = () => {
-    if (!sensor.isActive || sensor.lastPing < Date.now() - 300000) return 'text-gray-500';
-    if (sensor.latestReading?.waterDetected) return 'text-danger';
-    if (sensor.batteryLevel < 20) return 'text-warning';
-    return 'text-success';
+    if (!sensor.isActive) return 'text-gray-400';
+    if (sensor.lastReading?.waterDetected) return 'text-danger-500';
+    if (sensor.batteryLevel < 20) return 'text-warning-500';
+    return 'text-success-500';
   };
 
-  const getStatusIcon = () => {
-    if (!sensor.isActive || sensor.lastPing < Date.now() - 300000) return WifiOff;
-    if (sensor.latestReading?.waterDetected) return AlertTriangle;
-    return Wifi;
+  const getStatusText = () => {
+    if (!sensor.isActive) return 'Offline';
+    if (sensor.lastReading?.waterDetected) return 'Water Detected!';
+    if (sensor.batteryLevel < 20) return 'Low Battery';
+    return 'Active';
   };
 
-  const StatusIcon = getStatusIcon();
+  const getBgColor = () => {
+    if (!sensor.isActive) return 'bg-gray-50';
+    if (sensor.lastReading?.waterDetected) return 'bg-danger-50 border-danger-200';
+    return 'bg-white';
+  };
 
   return (
-    <div className="sensor-card">
-      <div className="flex items-center justify-between mb-3">
-        <h4 className="font-medium text-text-primary">{sensor.location}</h4>
-        <div className="flex items-center">
-          <StatusIcon className={`h-4 w-4 ${getStatusColor()}`} />
-          {sensor.latestReading?.waterDetected && (
-            <div className="ml-2 w-2 h-2 bg-danger rounded-full animate-pulse-slow"></div>
+    <div
+      onClick={onClick}
+      className={`sensor-card cursor-pointer ${getBgColor()} ${
+        sensor.lastReading?.waterDetected ? 'animate-pulse-slow' : ''
+      }`}
+    >
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center space-x-3">
+          <div className={`p-2 rounded-xl ${
+            sensor.isActive ? 'bg-primary-100' : 'bg-gray-100'
+          }`}>
+            <Droplets className={`w-5 h-5 ${
+              sensor.isActive ? 'text-primary-600' : 'text-gray-400'
+            }`} />
+          </div>
+          <div>
+            <h3 className="font-medium text-gray-900">{sensor.location}</h3>
+            <p className="text-sm text-gray-500">{sensor.deviceType}</p>
+          </div>
+        </div>
+        
+        <div className="flex items-center space-x-2">
+          {sensor.isActive ? (
+            <Wifi className="w-4 h-4 text-success-500" />
+          ) : (
+            <WifiOff className="w-4 h-4 text-gray-400" />
+          )}
+          {sensor.lastReading?.waterDetected && (
+            <AlertTriangle className="w-4 h-4 text-danger-500 animate-bounce-slow" />
           )}
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-3">
-        <div className="flex items-center">
-          <Droplets className="h-4 w-4 text-primary mr-2" />
-          <div className="text-sm">
-            <div className="text-text-secondary">Humidity</div>
-            <div className="font-medium text-text-primary">
-              {sensor.latestReading?.humidity || 45}%
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center">
-          <Thermometer className="h-4 w-4 text-primary mr-2" />
-          <div className="text-sm">
-            <div className="text-text-secondary">Temperature</div>
-            <div className="font-medium text-text-primary">
-              {sensor.latestReading?.temperature || 22}°C
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between text-sm">
-        <div className="flex items-center">
-          <Battery className="h-4 w-4 text-text-muted mr-1" />
-          <span className={`${sensor.batteryLevel < 20 ? 'text-warning' : 'text-text-secondary'}`}>
-            {sensor.batteryLevel}%
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <span className={`text-sm font-medium ${getStatusColor()}`}>
+            {getStatusText()}
           </span>
+          {sensor.lastPing && (
+            <span className="text-xs text-gray-500">
+              {formatDistanceToNow(new Date(sensor.lastPing), { addSuffix: true })}
+            </span>
+          )}
         </div>
-        <span className="text-text-muted">
-          {formatDistanceToNow(new Date(sensor.lastPing), { addSuffix: true })}
-        </span>
-      </div>
 
-      {sensor.latestReading?.waterDetected && (
-        <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded-md">
-          <div className="text-sm font-medium text-red-800">Water Detected!</div>
-          <div className="text-xs text-red-600">
-            Confidence: {Math.round((sensor.latestReading.confidence || 0.95) * 100)}%
+        {sensor.isActive && sensor.lastReading && (
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex items-center space-x-2">
+              <Droplets className="w-4 h-4 text-water-400" />
+              <div>
+                <p className="text-xs text-gray-500">Humidity</p>
+                <p className="text-sm font-medium">{sensor.lastReading.humidity.toFixed(1)}%</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Thermometer className="w-4 h-4 text-orange-400" />
+              <div>
+                <p className="text-xs text-gray-500">Temperature</p>
+                <p className="text-sm font-medium">{sensor.lastReading.temperature.toFixed(1)}°C</p>
+              </div>
+            </div>
           </div>
+        )}
+
+        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+          <div className="flex items-center space-x-2">
+            <Battery className={`w-4 h-4 ${
+              sensor.batteryLevel > 50 ? 'text-success-500' :
+              sensor.batteryLevel > 20 ? 'text-warning-500' : 'text-danger-500'
+            }`} />
+            <span className="text-sm text-gray-600">{sensor.batteryLevel}%</span>
+          </div>
+          
+          {sensor.lastReading?.confidence && (
+            <div className="text-xs text-gray-500">
+              Confidence: {(sensor.lastReading.confidence * 100).toFixed(0)}%
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

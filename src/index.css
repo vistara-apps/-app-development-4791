@@ -3,37 +3,29 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --color-primary: hsl(211, 100%, 50%);
-    --color-danger: hsl(0, 84%, 60%);
-    --color-success: hsl(142, 76%, 36%);
-    --color-warning: hsl(38, 92%, 50%);
-    --radius-md: 10px;
-  }
-  
-  * {
+  body {
     font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   }
 }
 
 @layer components {
   .sensor-card {
-    @apply bg-surface border border-border rounded-lg p-lg shadow-card hover:shadow-card-hover transition-all duration-250;
+    @apply bg-white rounded-2xl shadow-sm border border-gray-100 p-6 transition-all duration-300 hover:shadow-md;
   }
   
   .alert-banner {
-    @apply rounded-lg p-md border-l-4 shadow-alert;
+    @apply rounded-xl p-4 border-l-4 shadow-sm;
   }
   
-  .alert-critical {
-    @apply alert-banner bg-red-50 border-danger text-red-900;
+  .btn-primary {
+    @apply bg-primary-500 hover:bg-primary-600 text-white font-medium py-3 px-6 rounded-xl transition-colors duration-200;
   }
   
-  .alert-warning {
-    @apply alert-banner bg-yellow-50 border-warning text-yellow-900;
+  .btn-danger {
+    @apply bg-danger-500 hover:bg-danger-600 text-white font-medium py-3 px-6 rounded-xl transition-colors duration-200;
   }
   
-  .alert-info {
-    @apply alert-banner bg-blue-50 border-primary text-blue-900;
+  .btn-ghost {
+    @apply border border-gray-300 hover:border-gray-400 text-gray-700 font-medium py-3 px-6 rounded-xl transition-colors duration-200;
   }
 }

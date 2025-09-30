@@ -1,42 +1,47 @@
 import React from 'react';
-import { Shield, Bell, FileText, Users, Settings, BarChart3, Home } from 'lucide-react';
+import { Droplets, Bell, Shield, Phone, FileText, LayoutDashboard } from 'lucide-react';
 
-export function Header({ activeView, setActiveView, alerts }) {
-  const navigation = [
-    { id: 'dashboard', name: 'Dashboard', icon: Home },
-    { id: 'alerts', name: 'Alerts', icon: Bell, badge: alerts.filter(a => !a.acknowledged).length },
-    { id: 'insurance', name: 'Insurance', icon: FileText },
-    { id: 'services', name: 'Services', icon: Users },
-    { id: 'sensors', name: 'Sensors', icon: Settings },
-    { id: 'analytics', name: 'Analytics', icon: BarChart3 },
+export function Header({ activeView, onViewChange, alertCount }) {
+  const navItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'alerts', label: 'Alerts', icon: Bell, badge: alertCount },
+    { id: 'insurance', label: 'Reports', icon: FileText },
+    { id: 'emergency', label: 'Emergency', icon: Phone },
   ];
 
   return (
-    <header className="bg-white border-b border-border shadow-sm">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-lg border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center">
-            <Shield className="h-8 w-8 text-primary mr-3" />
-            <h1 className="text-xl font-bold text-text-primary">LeakGuard</h1>
+        <div className="flex items-center justify-between h-16">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-primary-500 rounded-xl">
+              <Droplets className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-gray-900">LeakGuard</h1>
+              <p className="text-xs text-gray-500">Water Sentinel</p>
+            </div>
           </div>
-          
-          <nav className="hidden md:flex space-x-8">
-            {navigation.map((item) => {
+
+          <nav className="hidden md:flex items-center space-x-1">
+            {navItems.map((item) => {
               const Icon = item.icon;
+              const isActive = activeView === item.id;
+              
               return (
                 <button
                   key={item.id}
-                  onClick={() => setActiveView(item.id)}
-                  className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors relative ${
-                    activeView === item.id
-                      ? 'text-primary bg-blue-50'
-                      : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
+                  onClick={() => onViewChange(item.id)}
+                  className={`relative flex items-center space-x-2 px-4 py-2 rounded-xl font-medium transition-colors duration-200 ${
+                    isActive
+                      ? 'bg-primary-500 text-white'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   }`}
                 >
-                  <Icon className="h-4 w-4 mr-2" />
-                  {item.name}
+                  <Icon className="w-4 h-4" />
+                  <span className="text-sm">{item.label}</span>
                   {item.badge > 0 && (
-                    <span className="ml-2 bg-danger text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 bg-danger-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                       {item.badge}
                     </span>
                   )}
@@ -45,18 +50,14 @@ export function Header({ activeView, setActiveView, alerts }) {
             })}
           </nav>
 
-          <div className="md:hidden">
-            <select
-              value={activeView}
-              onChange={(e) => setActiveView(e.target.value)}
-              className="border border-border rounded-md px-3 py-2 bg-white"
-            >
-              {navigation.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.name} {item.badge > 0 && `(${item.badge})`}
-                </option>
-              ))}
-            </select>
+          <div className="flex items-center space-x-3">
+            <div className="hidden sm:block text-right">
+              <p className="text-sm font-medium text-gray-900">Pro Plan</p>
+              <p className="text-xs text-gray-500">All features unlocked</p>
+            </div>
+            <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+              <Shield className="w-4 h-4 text-primary-600" />
+            </div>
           </div>
         </div>
       </div>

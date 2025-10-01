@@ -27,6 +27,9 @@ jobs:
       env:
         NODE_OPTIONS: --max-old-space-size=4096
         
+    - name: Decompress logs
+      run: unzip logs.zip -d logs
+
     - name: Deploy to Vercel (Production)
       if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
       uses: amondnet/vercel-action@v25
@@ -62,5 +65,5 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: `🚀 **Preview Deployment Ready!**
-              \n\n📱 Deployment URL: ${deploymentUrl}`
-            });
+              \n\n📱
+...

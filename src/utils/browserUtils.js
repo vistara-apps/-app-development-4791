@@ -1,11 +1,17 @@
-export function isBrowser() { return typeof window !== 'undefined'; }
-
-export function doSomething() {
-  if (isBrowser()) {
-    // Browser-specific code
-    console.log(window.location.href);
+function getWindow() {
+  if (typeof window !== 'undefined') {
+    return window;
   } else {
-    // Fallback or server-side logic
-    console.log('Not in a browser environment');
+    return null;
+  }
+}
+
+export function performBrowserTask() {
+  const win = getWindow();
+  if (win) {
+    // Perform operations that require window
+    console.log(win.location.href);
+  } else {
+    console.log('Window object is not available in this environment.');
   }
 }

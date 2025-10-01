@@ -1,15 +1,14 @@
 import React from 'react';
-import { isBrowser } from '../utils/browserUtils';
 
-const SomeComponent = () => {
+function SomeComponent() {
   React.useEffect(() => {
-    if (isBrowser()) {
-      // Browser-specific side effects
-      document.title = 'My App';
+    if (typeof window !== 'undefined') {
+      // Perform operations that require window
+      console.log(window.innerWidth);
     }
   }, []);
 
   return <div>Some Component</div>;
-};
+}
 
 export default SomeComponent;
